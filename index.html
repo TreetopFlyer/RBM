@@ -54,14 +54,14 @@
                 affine = M.Transform(inRBM.MatrixForward, inData);
                 sig = M.Sigmoid(affine);
                 bool = RBM.Bool(sig);
-                return bool;
+                return sig;
             };
             RBM.Back = function(inRBM, inData)
             {
                 affine = M.Transform(inRBM.MatrixBackward, inData);
                 sig = M.Sigmoid(affine);
                 bool = RBM.Bool(sig);
-                return bool;
+                return sig;
             };
             RBM.Adjust = function(inRBM, inPos, inNeg, inRate)
             {
@@ -104,7 +104,7 @@
 			var rbm1 = RBM.Create(4, 400);
 			
             var i;
-            for(i=0; i<10000; i++)
+            for(i=0; i<1000; i++)
             {
                RBM.Train(rbm1, trainingSet, 0.5); 
             }
