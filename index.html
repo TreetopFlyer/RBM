@@ -8,30 +8,6 @@
 		<script>
 			
 			var RBM = {};
-			RBM.Bool = function(inMatrix)
-			{
-				var i, j;
-				var rand;
-				var outM = [];
-				for(i=0; i<inMatrix.length; i++)
-				{
-					var outV = []
-					for(j=0; j<inMatrix[i].length; j++)
-					{
-						rand = Math.random();
-						if(rand < inMatrix[i][j])
-						{
-							outV[j] = 1;
-						}
-						else
-						{
-							outV[j] = 0;
-						}
-					}
-					outM.push(outV);
-				}
-				return outM;
-			};
 			RBM.Create = function(inDimensionsIn, inDimensionsOut)
 			{
 				var obj = {};
@@ -51,19 +27,11 @@
 			};
             RBM.Out = function(inRBM, inData)
             {
-                affine = M.Transform(inRBM.MatrixForward, inData);
-                return M.Sigmoid(affine);
+                return M.Sigmoid(M.Transform(inRBM.MatrixForward, inData));
             };
             RBM.Back = function(inRBM, inData)
             {
-                affine = M.Transform(inRBM.MatrixBackward, inData);
-                return M.Sigmoid(affine);
-            };
-            RBM.Adjust = function(inRBM, inPos, inNeg, inRate)
-            {
-                inRBM.MatrixForward = M.Add(inRBM.MatrixForward, M.Scale(inPos, inRate));
-                inRBM.MatrixForward = M.Subtract(inRBM.MatrixForward, M.Scale(inNeg, inRate));
-                inRBM.MatrixBackward = M.Transpose(inRBM.MatrixForward);  
+                return M.Sigmoid(M.Transform(inRBM.MatrixBackward, inData));
             };
 			RBM.Train = function(inRBM, inData, inRate)
 			{
@@ -71,25 +39,45 @@
                 pass2 = RBM.Back(inRBM, pass1);
                 pass3 = RBM.Out(inRBM, pass2);
                 
-                var pos = M.Outer(inData[0], pass1[0]);
-                var neg = M.Outer(inData[0], pass3[0])
+                var pos;
+                var neg;
+                var i;
+                for(i=0; i<inData.length; i++)
+                {
+                    pos = M.Outer(inData[i], pass1[i]);
+                    neg = M.Outer(inData[i], pass3[i]);
+                    inRBM.MatrixForward = M.Add(inRBM.MatrixForward, M.Scale(pos, inRate));
+                    inRBM.MatrixForward = M.Subtract(inRBM.MatrixForward, M.Scale(neg, inRate));
+                }
                 
-                RBM.Adjust(inRBM, pos, neg, inRate);
+                inRBM.MatrixBackward = M.Transpose(inRBM.MatrixForward);  
 			};
             RBM.Observe = function(inRBM, inData)
 			{
                 return RBM.Back( inRBM, RBM.Out(inRBM, inData) );
 			};
+            RBM.ObserveN = function(inRBM, inData, inIterations)
+            {
+                var i;
+                var obs = inData;
+                for(i=0; i<inIterations; i++)
+                {
+                    obs = RBM.Observe(inRBM, obs);  
+                }
+                return obs;
+            };
 			
 
-            var trainingSet = [[0, 0, 1, 1, 0, 0]];
-			var rbm1 = RBM.Create(6, 1000);
-			
+            var trainingSet = [];
+            trainingSet.push([0, 0, 1, 1, 0, 0, 0, 0]);
+            trainingSet.push([1, 0, 0, 0, 0, 1, 0, 0]);
+            trainingSet.push([1, 0, 0, 0, 0, 1, 1, 1]);
+            
+			var rbm1 = RBM.Create(8, 1000);
             var i;
-            for(i=0; i<100; i++)
+            for(i=0; i<1000; i++)
             {
-               RBM.Train(rbm1, [[0, 0, 1, 1, 0, 0]], 0.1); 
-               RBM.Train(rbm1, [[1, 0, 0, 0, 1, 0]], 0.1); 
+               RBM.Train(rbm1, trainingSet, 0.1); 
             }
 			
 			//console.log( RBM.Observe(rbm1, trainingSet) );
