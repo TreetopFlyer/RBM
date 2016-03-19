@@ -52,35 +52,32 @@
                 
                 inRBM.MatrixBackward = M.Transpose(inRBM.MatrixForward);  
 			};
-            RBM.Observe = function(inRBM, inData)
-			{
-                return RBM.Back( inRBM, RBM.Out(inRBM, inData) );
-			};
-            RBM.ObserveN = function(inRBM, inData, inIterations)
+
+            RBM.Observe = function(inRBM, inData, inIterations)
             {
                 var i;
                 var obs = inData;
                 for(i=0; i<inIterations; i++)
                 {
-                    obs = RBM.Observe(inRBM, obs);  
+                    obs = RBM.Back( inRBM, RBM.Out(inRBM, obs) ); 
                 }
                 return obs;
             };
 			
 
             var trainingSet = [];
-            trainingSet.push([0, 0, 1, 1, 0, 0, 0, 0]);
-            trainingSet.push([1, 0, 0, 0, 0, 1, 0, 0]);
-            trainingSet.push([1, 0, 0, 0, 0, 1, 1, 1]);
+            trainingSet.push([0, 0, 1, 1, 0, 0, 0, 0, 1, 1]);
+            trainingSet.push([1, 0, 0, 0, 0, 1, 0, 0, 1, 1]);
             
-			var rbm1 = RBM.Create(8, 1000);
+			var rbm1 = RBM.Create(10, 50);
             var i;
             for(i=0; i<1000; i++)
             {
-               RBM.Train(rbm1, trainingSet, 0.1); 
+               RBM.Train(rbm1, trainingSet, 1); 
             }
 			
-			//console.log( RBM.Observe(rbm1, trainingSet) );
+			console.log( RBM.Observe(rbm1, [[0, 0, 1, 0, 0, 0, 0, 0, 1, 0]], 5) );
+			console.log( RBM.Observe(rbm1, [[1, 0, 0, 0, 0, 0, 0, 0, 0, 1]], 5) );
 			
 		</script>
 	</body>
