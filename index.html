@@ -80,10 +80,20 @@
 			{
                 return RBM.Back( inRBM, RBM.Out(inRBM, inData) );
 			};
+            RBM.ObserveN = function(inRBM, inData, inIterations)
+			{
+                var obs = inData;
+                var i;
+                for(i=0; i<inIteratgit ions; i++)
+                {
+                    obs = RBM.Back( inRBM, RBM.Out(inRBM, obs) );
+                }
+                return obs;
+			};
 			
 
             var trainingSet = [[0, 0, 1, 1, 0, 0]];
-			var rbm1 = RBM.Create(6, 1000);
+			var rbm1 = RBM.Create(6, 100);
 			
             var i;
             for(i=0; i<100; i++)
