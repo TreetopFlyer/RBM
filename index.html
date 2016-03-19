@@ -52,16 +52,12 @@
             RBM.Out = function(inRBM, inData)
             {
                 affine = M.Transform(inRBM.MatrixForward, inData);
-                sig = M.Sigmoid(affine);
-                bool = RBM.Bool(sig);
-                return sig;
+                return M.Sigmoid(affine);
             };
             RBM.Back = function(inRBM, inData)
             {
                 affine = M.Transform(inRBM.MatrixBackward, inData);
-                sig = M.Sigmoid(affine);
-                bool = RBM.Bool(sig);
-                return sig;
+                return M.Sigmoid(affine);
             };
             RBM.Adjust = function(inRBM, inPos, inNeg, inRate)
             {
@@ -71,45 +67,32 @@
             };
 			RBM.Train = function(inRBM, inData, inRate)
 			{
-                var pass1 = inData;
+                pass1 = RBM.Out(inRBM, inData);
+                pass2 = RBM.Back(inRBM, pass1);
+                pass3 = RBM.Out(inRBM, pass2);
                 
-                pass2 = RBM.Out(inRBM, pass1);
-                pass3 = RBM.Back(inRBM, pass2);
-                pass4 = RBM.Out(inRBM, pass3);
-                
-                var pos = M.Outer(inData[0], pass2[0]);
-                var neg = M.Outer(inData[0], pass4[0])
+                var pos = M.Outer(inData[0], pass1[0]);
+                var neg = M.Outer(inData[0], pass3[0])
                 
                 RBM.Adjust(inRBM, pos, neg, inRate);
 			};
             RBM.Observe = function(inRBM, inData)
 			{
-                /*
-                var pass1 = inData;
-                pass2 = RBM.Out(inRBM, pass1);
-                return RBM.Back(inRBM, pass2);
-                */
-                
-                affine = M.Transform(inRBM.MatrixForward, inData);
-                sig = M.Sigmoid(affine);
-                
-                affine = M.Transform(inRBM.MatrixBackward, sig);
-                sig = M.Sigmoid(affine);
-                
-                return sig;
+                return RBM.Back( inRBM, RBM.Out(inRBM, inData) );
 			};
 			
 
-            var trainingSet = [[0, 0, 1, 1]];
-			var rbm1 = RBM.Create(4, 400);
+            var trainingSet = [[0, 0, 1, 1, 0, 0]];
+			var rbm1 = RBM.Create(6, 1000);
 			
             var i;
-            for(i=0; i<1000; i++)
+            for(i=0; i<100; i++)
             {
-               RBM.Train(rbm1, trainingSet, 0.5); 
+               RBM.Train(rbm1, [[0, 0, 1, 1, 0, 0]], 0.1); 
+               RBM.Train(rbm1, [[1, 0, 0, 0, 1, 0]], 0.1); 
             }
 			
-			console.log( RBM.Observe(rbm1, trainingSet) );
+			//console.log( RBM.Observe(rbm1, trainingSet) );
 			
 		</script>
 	</body>
