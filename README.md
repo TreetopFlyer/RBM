@@ -31,10 +31,11 @@ Returns a matrix of values that correspond to the network interpretation of each
     trainingSet.push([1, 1, 1, 1, 1, 0, 0, 0, 0, 0]);
     
     RBM.Train(rbm1, trainingSet, 100, 1, 0.5); // train the RBM for 100 iterations using CD1 at a learning rate of 0.5
-    RBM.Train(rbm1, trainingSet, 200, 3, 0.1); // train the RBM for 200 iterations using CD3 at a learning rate of 0.1
+    RBM.Train(rbm1, trainingSet, 500, 3, 0.1); // train the RBM for 200 iterations using CD3 at a learning rate of 0.1
 		/*
 		RBM.Train can be called repeatedly like this,
-		because the network will just pick up with the new training where it left off with the old training
+		because the network will just pick up with the new training where it left off with the old training.
+		Here we are starting off with some coarse training, and then finalizing the network with another round of finer training
 		*/
 		
     var observationSet = [];
