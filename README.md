@@ -1,6 +1,7 @@
 # RBM
 
 JavaScript library for working with single layer Restricted Boltzmann Machines.
+(Requires my vector/matrix library vcore)
 
 ## RBM Static members
 
@@ -17,6 +18,14 @@ Returns a matrix of values that correspond to the network interpretation of each
 
 
 ## Sample useage
+
+    <!DOCTYPE html>
+    <html>
+    	<head>
+    		<!-- requires vcore -->
+    		<script src="//treetopflyer.github.com/vcore/lib.js"></script>
+    		<script src="//treetopflyer.github.com/RBM/lib.js"></script>
+    		<script>
 
     var rbm1 = RBM.Create(10, 50);  // create an RBM with 10 input units and 50 hidden units
     
@@ -43,3 +52,7 @@ Returns a matrix of values that correspond to the network interpretation of each
     observationSet.push([0, 0, 0, 1, 0, 1, 1, 0, 1, 1]);
     observationSet.push([0, 0, 0, 0.3, 0.1, 1.5, 1.8, 0.8, 2, 2.5]);
     console.log( RBM.Observe(rbm1, observationSet, 10) ); // show the network some vectors, running them through the RBM 10 times, and return the results 
+    
+    		</script>
+    	</head>
+    </html>
