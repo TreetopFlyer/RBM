@@ -2,96 +2,11 @@
 <html>
 	<head>
 		<script src="//treetopflyer.github.com/vcore/lib.js"></script>
+        <script src="lib.js"></script>
 	</head>
 	<body>
 
 		<script>
-
-			var RBM = {};
-			RBM.Create = function(inDimensionsIn, inDimensionsOut)
-			{
-				var obj = {};
-				var min = [];
-				var max = [];
-				var i;
-                
-                inDimensionsIn++;
-                inDimensionsOut++;
-
-				for(i=0; i<inDimensionsIn; i++)
-				{
-					min.push(-0.5);
-					max.push(0.5);
-				}
-				
-				obj.MatrixForward = M.Box([min, max], inDimensionsOut);
-				obj.MatrixBackward = M.Transpose(obj.MatrixForward);
-				
-				return obj;
-			};
-            RBM.Out = function(inRBM, inData)
-            {
-                // inData MUST be padded before calling this method
-                return  M.Repad( M.Sigmoid(M.Transform(inRBM.MatrixForward, inData)) );
-            };
-            RBM.Back = function(inRBM, inData)
-            {
-                // inData MUST be padded before calling this method
-                return  M.Repad( M.Sigmoid(M.Transform(inRBM.MatrixBackward, inData)) );
-            };
-            // contrative divergence
-            RBM.CD = function(inRBM, inData, inRate)
-			{
-                var pos;
-                var neg;
-                var i;
-                var pass1, pass2, pass3
-                
-                pass1 = RBM.Out(inRBM, inData);
-                
-                pass2 = RBM.Back(inRBM, pass1);
-                pass3 = RBM.Out(inRBM, pass2);
-                
-                /*
-                var start = pass1;
-                for(i=0; i<10; i++)
-                {
-                    start = RBM.Out(inRBM, RBM.Back(inRBM, start));
-                }
-                */
-
-                for(i=0; i<inData.length; i++)
-                {
-                    pos = M.Outer(inData[i], pass1[i]);
-                    neg = M.Outer(inData[i], pass3[i]);
-                    inRBM.MatrixForward = M.Add(inRBM.MatrixForward, M.Scale(pos, inRate));
-                    inRBM.MatrixForward = M.Subtract(inRBM.MatrixForward, M.Scale(neg, inRate));
-                }
-                
-                inRBM.MatrixBackward = M.Transpose(inRBM.MatrixForward);  
-			};
-            
-            
-			RBM.Train = function(inRBM, inData, inIterations, inRate)
-			{
-                var i;
-                var copy = M.Pad(M.Clone(inData));
-                for(i=0; i<inIterations; i++)
-                {
-                    RBM.CD(inRBM, copy, inRate)
-                }
-			};
-            RBM.Observe = function(inRBM, inData, inIterations)
-            {
-                var i;
-                var obs = M.Pad(M.Clone(inData));
-                for(i=0; i<inIterations; i++)
-                {
-                    obs = RBM.Back( inRBM, RBM.Out(inRBM, obs) ); 
-                }
-                return obs;
-            };
-
 
             var rbm1 = RBM.Create(10, 50);
             
@@ -104,7 +19,8 @@
             trainingSet.push([1, 0, 1, 1, 1, 0, 0, 0, 0, 0]);
             trainingSet.push([1, 0, 1, 0, 1, 0, 0, 0, 0, 0]);
             trainingSet.push([1, 1, 1, 1, 1, 0, 0, 0, 0, 0]);
-            RBM.Train(rbm1, trainingSet, 1000, 0.1);
+            RBM.Train(rbm1, trainingSet, 100, 1, 0.5);
+            RBM.Train(rbm1, trainingSet, 200, 3, 0.2);
 			
             var observationSet = [];
             observationSet.push([1, 1, 1, 1, 1, 0, 0, 0, 1, 0]);
