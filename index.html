@@ -1,11 +1,113 @@
 <!DOCTYPE html>
 <html>
 	<head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+
 		<script src="//treetopflyer.github.com/vcore/lib.js"></script>
+        <script src="//treetopflyer.github.com/rasterizer/lib.js"></script>
+        
         <script src="lib.js"></script>
 	</head>
 	<body>
+        
+        <img class="ts1 1_1" src="ts2_L_1.png"/>
+        <img class="ts1 1_2" src="ts2_L_2.png"/>
+        <img class="ts1 1_3" src="ts2_L_3.png"/>
+        
+        <img class="ts1 2_1" src="ts2_E_1.png"/>
+        <img class="ts1 2_2" src="ts2_E_2.png"/>
+        <img class="ts1 2_3" src="ts2_E_3.png"/>
+        
+        <img class="ts1 3_1" src="ts1_1_1.png"/>
+        <img class="ts1 3_2" src="ts1_1_2.png"/>
+        <img class="ts1 3_3" src="ts1_1_3.png"/>
+        <img class="ts1 3_4" src="ts1_1_4.png"/>
+        
+        <br/>
+        <br/>
+        
+        <canvas width="50" height="50"></canvas>
+        
+        <script>
+            
+            Rasterizer.ArrayRead = function(inRasterizer)
+            {
+                var out = [];
+                Rasterizer.Iterate(inRasterizer, function(inMathX, inMathY, inScreenX, inScreenY)
+                {
+                    var data = inRasterizer.Canvas.getImageData(inScreenX, inScreenY, 1, 1).data;
+                    if(data[0] > 100)
+                        out.push(1);
+                    else
+                        out.push(0);
+                });
+                return out;
+            };
+            Rasterizer.ArrayWrite = function(inRasterizer, inArray, inBias)
+            {
+                var counter = -1;
+                var brightness;
+                Rasterizer.Iterate(inRasterizer, function(inMathX, inMathY, inScreenX, inScreenY)
+                {
+                    counter++;
+                    brightness = inArray[counter] + inBias;
+                    
+                    return [brightness, brightness, brightness];
+                });
+            };
+            
+            RBM.Linear = function(inRBM, inObservations)
+            {
+                var obs = M.Pad(M.Clone(inObservations));
+                
+                return M.Transform(inRBM.MatrixBackward, RBM.Out(inRBM, obs));
+            };
+            
+            
+            var ras = Rasterizer.CreateFrom($("canvas").eq(0));
+            var training = [];
+            Rasterizer.Bake(ras, $("img.1_1"));
+            training.push(Rasterizer.ArrayRead(ras));
+            Rasterizer.Bake(ras, $("img.1_2"));
+            training.push(Rasterizer.ArrayRead(ras));
+            Rasterizer.Bake(ras, $("img.1_3"));
+            training.push(Rasterizer.ArrayRead(ras));
+            Rasterizer.Bake(ras, $("img.2_1"));
+            training.push(Rasterizer.ArrayRead(ras));
+            Rasterizer.Bake(ras, $("img.2_2"));
+            training.push(Rasterizer.ArrayRead(ras));
+            Rasterizer.Bake(ras, $("img.2_3"));
+            training.push(Rasterizer.ArrayRead(ras));
+            
+            Rasterizer.Bake(ras, $("img.3_1"));
+            training.push(Rasterizer.ArrayRead(ras));
+            Rasterizer.Bake(ras, $("img.3_2"));
+            training.push(Rasterizer.ArrayRead(ras));
+            Rasterizer.Bake(ras, $("img.3_3"));
+            training.push(Rasterizer.ArrayRead(ras));
+            Rasterizer.Bake(ras, $("img.3_4"));
+            training.push(Rasterizer.ArrayRead(ras));
+            
+            
+            var rbm = RBM.Create(2500, 20);
 
+            RBM.Train(rbm, training, 10, 1, 0.1);
+            RBM.Train(rbm, training, 100, 1, 0.05);
+            RBM.Train(rbm, training, 500, 1, 0.01);
+            Rasterizer.ArrayWrite(ras, RBM.Observe(rbm, [training[0]], 1)[0], 0.0);
+            
+            //RBM.Train(rbm, training, 500, 2, 0.2);
+            //console.log("training done!");
+            
+            //Rasterizer.ArrayWrite(ras, rbm.MatrixForward[0], 0.5);
+            //Rasterizer.ArrayWrite(ras, M.Sigmoid([rbm.MatrixForward[0]])[0], 0.0);
+            //Rasterizer.ArrayWrite(ras, RBM.Observe(rbm, [training[0]], 1)[0], 0.0);
+            //Rasterizer.ArrayWrite(ras, RBM.Linear(rbm, [training[0]], 1)[0], 0.0);
+            
+            
+        </script>
+        
+        <!--
 		<script>
 
             var rbm1 = RBM.Create(10, 50);
@@ -29,5 +131,6 @@
             console.log( RBM.Observe(rbm1, observationSet, 1) );
 			
 		</script>
+        -->
 	</body>
 </html>
