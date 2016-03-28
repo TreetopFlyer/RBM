@@ -23,10 +23,15 @@
         <img class="ts1 3_3" src="ts1_1_3.png"/>
         <img class="ts1 3_4" src="ts1_1_4.png"/>
         
+        <img class="ts1 4_1" src="ts1_2_1.png"/>
+        <img class="ts1 4_2" src="ts1_2_2.png"/>
+        <img class="ts1 4_3" src="ts1_2_3.png"/>
+        <img class="ts1 4_4" src="ts1_2_4.png"/>
+        
         <br/>
         <br/>
         
-        <canvas width="50" height="50"></canvas>
+        <canvas width="30" height="30"></canvas>
         
         <script>
             
@@ -64,37 +69,62 @@
             };
             
             
+            RBM.Label = function(inRBM, inData)
+            {
+                var i, j;
+                var output =  M.Unpad(RBM.Out(inRBM, M.Pad(M.Clone(inData))));
+                for(i=0; i<output.length; i++)
+                {
+                    for(j=0; j<output[i].length; j++)
+                    {
+                        output[i][j] = Math.floor(output[i][j]*100)/100;
+                    }
+                    console.log(i+".) ", output[i].join(", "));
+                }
+            };
+            
             var ras = Rasterizer.CreateFrom($("canvas").eq(0));
             var training = [];
-            Rasterizer.Bake(ras, $("img.1_1"));
-            training.push(Rasterizer.ArrayRead(ras));
-            Rasterizer.Bake(ras, $("img.1_2"));
-            training.push(Rasterizer.ArrayRead(ras));
-            Rasterizer.Bake(ras, $("img.1_3"));
-            training.push(Rasterizer.ArrayRead(ras));
-            Rasterizer.Bake(ras, $("img.2_1"));
-            training.push(Rasterizer.ArrayRead(ras));
-            Rasterizer.Bake(ras, $("img.2_2"));
-            training.push(Rasterizer.ArrayRead(ras));
-            Rasterizer.Bake(ras, $("img.2_3"));
-            training.push(Rasterizer.ArrayRead(ras));
-            
-            Rasterizer.Bake(ras, $("img.3_1"));
-            training.push(Rasterizer.ArrayRead(ras));
-            Rasterizer.Bake(ras, $("img.3_2"));
-            training.push(Rasterizer.ArrayRead(ras));
-            Rasterizer.Bake(ras, $("img.3_3"));
-            training.push(Rasterizer.ArrayRead(ras));
-            Rasterizer.Bake(ras, $("img.3_4"));
-            training.push(Rasterizer.ArrayRead(ras));
-            
-            
-            var rbm = RBM.Create(2500, 20);
+            var rbm = RBM.Create(900, 4);
 
-            RBM.Train(rbm, training, 10, 1, 0.1);
-            RBM.Train(rbm, training, 100, 1, 0.05);
-            RBM.Train(rbm, training, 500, 1, 0.01);
-            Rasterizer.ArrayWrite(ras, RBM.Observe(rbm, [training[0]], 1)[0], 0.0);
+            function go()
+            {
+                Rasterizer.Bake(ras, $("img.1_1"));
+                training.push(Rasterizer.ArrayRead(ras));
+                Rasterizer.Bake(ras, $("img.1_2"));
+                training.push(Rasterizer.ArrayRead(ras));
+                Rasterizer.Bake(ras, $("img.1_3"));
+                training.push(Rasterizer.ArrayRead(ras));
+                
+                Rasterizer.Bake(ras, $("img.2_1"));
+                training.push(Rasterizer.ArrayRead(ras));
+                Rasterizer.Bake(ras, $("img.2_2"));
+                training.push(Rasterizer.ArrayRead(ras));
+                Rasterizer.Bake(ras, $("img.2_3"));
+                training.push(Rasterizer.ArrayRead(ras));
+                
+                Rasterizer.Bake(ras, $("img.3_1"));
+                training.push(Rasterizer.ArrayRead(ras));
+                Rasterizer.Bake(ras, $("img.3_2"));
+                training.push(Rasterizer.ArrayRead(ras));
+                Rasterizer.Bake(ras, $("img.3_3"));
+                training.push(Rasterizer.ArrayRead(ras));
+                Rasterizer.Bake(ras, $("img.3_4"));
+                training.push(Rasterizer.ArrayRead(ras));
+                
+                Rasterizer.Bake(ras, $("img.4_1"));
+                training.push(Rasterizer.ArrayRead(ras));
+                Rasterizer.Bake(ras, $("img.4_2"));
+                training.push(Rasterizer.ArrayRead(ras));
+                Rasterizer.Bake(ras, $("img.4_3"));
+                training.push(Rasterizer.ArrayRead(ras));
+                Rasterizer.Bake(ras, $("img.4_4"));
+                training.push(Rasterizer.ArrayRead(ras));
+            
+            
+                RBM.Train(rbm, training, 5000, 1, 0.1);
+                RBM.Label(rbm, training);
+            }
             
             //RBM.Train(rbm, training, 500, 2, 0.2);
             //console.log("training done!");
