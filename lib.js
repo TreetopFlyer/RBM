@@ -11,14 +11,31 @@ RBM.Create = function(inDimensionsIn, inDimensionsOut)
 
     for(i=0; i<inDimensionsIn; i++)
     {
-        min.push(-0.5);
-        max.push(0.5);
+        min.push(-0.1);
+        max.push(0.1);
     }
     
     obj.MatrixForward = M.Box([min, max], inDimensionsOut);
     obj.MatrixBackward = M.Transpose(obj.MatrixForward);
     
     return obj;
+};
+RBM.Bool = function(inData)
+{ 
+    var i, j;
+    for(i=0; i<inData.length; i++)
+    {
+        for(j=0; j<inData[i].length; j++)
+        {
+            var rand = Math.random();
+            if(inData[i][j] > rand)
+                inData[i][j] = 1;
+            else
+                inData[i][j] = 0;
+        }
+    }
+    
+    return inData;
 };
 RBM.Out = function(inRBM, inData)
 {
@@ -39,7 +56,7 @@ RBM.CD = function(inRBM, inData, inCDN, inRate)
     var initial, current;
 
     var current = RBM.Out(inRBM, inData);
-    var initial = M.Clone(current);
+    var initial = RBM.Bool(M.Clone(current));
     for(i=0; i<inCDN; i++)
     {
         current = RBM.Out(inRBM, RBM.Back(inRBM, current));
@@ -72,7 +89,13 @@ RBM.Observe = function(inRBM, inData, inIterations)
     var obs = M.Pad(M.Clone(inData));
     for(i=0; i<inIterations; i++)
     {
-        obs = RBM.Back( inRBM, RBM.Out(inRBM, obs) ); 
+        obs = RBM.Back( inRBM, M.Bool(RBM.Out(inRBM, obs)) ); 
     }
     return M.Unpad(obs);
+};
+
+RBM.Label = function(inRBM, inData)
+{
+    var i, j;
+    return M.Unpad(RBM.Out(inRBM, M.Pad(M.Clone(inData))));
 };

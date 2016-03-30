@@ -5,12 +5,14 @@
         <script src="lib.js"></script>
 	</head>
 	<body>
-
+        
+        
 		<script>
 
-            var rbm1 = RBM.Create(10, 50);
+            var trainingSet, observationSet;
+            var rbm;
             
-            var trainingSet = [];
+            trainingSet = [];
             trainingSet.push([0, 0, 0, 0, 0, 1, 1, 1, 1, 1]);
             trainingSet.push([0, 0, 0, 0, 0, 1, 1, 0, 1, 1]);
             trainingSet.push([0, 0, 0, 0, 0, 0, 1, 1, 1, 1]);
@@ -19,15 +21,27 @@
             trainingSet.push([1, 0, 1, 1, 1, 0, 0, 0, 0, 0]);
             trainingSet.push([1, 0, 1, 0, 1, 0, 0, 0, 0, 0]);
             trainingSet.push([1, 1, 1, 1, 1, 0, 0, 0, 0, 0]);
-            RBM.Train(rbm1, trainingSet, 100, 1, 0.5);
-            RBM.Train(rbm1, trainingSet, 200, 3, 0.2);
-			
-            var observationSet = [];
+            trainingSet.push([0, 0, 0, 0, 1, 1, 1, 1, 1, 0]);
+            trainingSet.push([0, 0, 0, 0, 0, 1, 1, 1, 1, 1]);
+            trainingSet.push([0, 0, 0, 0, 0, 0, 1, 0, 1, 1]);
+            trainingSet.push([0, 0, 0, 0, 1, 0, 1, 1, 1, 0]);
+            trainingSet.push([1, 1, 1, 1, 1, 0, 0, 0, 1, 0]);
+            trainingSet.push([1, 1, 1, 0, 1, 0, 0, 0, 0, 0]);
+            trainingSet.push([1, 0, 1, 1, 1, 1, 0, 0, 0, 0]);
+            trainingSet.push([1, 1, 1, 1, 1, 0, 0, 0, 0, 0]);
+            
+            observationSet = [];
             observationSet.push([1, 1, 1, 1, 1, 0, 0, 0, 1, 0]);
-            observationSet.push([0, 0, 0, 1, 0, 1, 1, 0, 1, 1]);
-            observationSet.push([0, 0, 0, 0.3, 0.1, 1.5, 1.8, 0.8, 2, 2.5]);
-            console.log( RBM.Observe(rbm1, observationSet, 1) );
+            observationSet.push([1, 0, 1, 1, 1, 1, 0, 0, 0, 0]);
+            observationSet.push([1, 1, 1, 1, 0, 1, 0, 1, 0, 0]);
+            observationSet.push([0, 0, 0, 0, 0, 1, 1, 0, 1, 1]);
+            
+            rbm = RBM.Create(10, 2);
+            RBM.Train(rbm, trainingSet, 100, 1, 0.1);
+            
+            console.log(RBM.Label(rbm, observationSet));
 			
 		</script>
+        
 	</body>
 </html>
