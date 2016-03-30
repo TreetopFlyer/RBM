@@ -41,10 +41,12 @@
                 Rasterizer.Iterate(inRasterizer, function(inMathX, inMathY, inScreenX, inScreenY)
                 {
                     var data = inRasterizer.Canvas.getImageData(inScreenX, inScreenY, 1, 1).data;
+
                     if(data[0] > 100)
                         out.push(1);
                     else
                         out.push(0);
+
                 });
                 return out;
             };
@@ -61,31 +63,13 @@
                 });
             };
             
-            RBM.Linear = function(inRBM, inObservations)
-            {
-                var obs = M.Pad(M.Clone(inObservations));
-                
-                return M.Transform(inRBM.MatrixBackward, RBM.Out(inRBM, obs));
-            };
             
             
-            RBM.Label = function(inRBM, inData)
-            {
-                var i, j;
-                var output =  M.Unpad(RBM.Out(inRBM, M.Pad(M.Clone(inData))));
-                for(i=0; i<output.length; i++)
-                {
-                    for(j=0; j<output[i].length; j++)
-                    {
-                        output[i][j] = Math.floor(output[i][j]*100)/100;
-                    }
-                    console.log(i+".) ", output[i].join(", "));
-                }
-            };
+            
             
             var ras = Rasterizer.CreateFrom($("canvas").eq(0));
             var training = [];
-            var rbm = RBM.Create(900, 4);
+            var rbm = RBM.Create(900, 5);
 
             function go()
             {
@@ -122,8 +106,8 @@
                 training.push(Rasterizer.ArrayRead(ras));
             
             
-                RBM.Train(rbm, training, 5000, 1, 0.1);
-                RBM.Label(rbm, training);
+                RBM.Train(rbm, training, 500, 1, 0.01);
+                console.log(RBM.Label(rbm, training));
             }
             
             //RBM.Train(rbm, training, 500, 2, 0.2);
@@ -132,7 +116,6 @@
             //Rasterizer.ArrayWrite(ras, rbm.MatrixForward[0], 0.5);
             //Rasterizer.ArrayWrite(ras, M.Sigmoid([rbm.MatrixForward[0]])[0], 0.0);
             //Rasterizer.ArrayWrite(ras, RBM.Observe(rbm, [training[0]], 1)[0], 0.0);
-            //Rasterizer.ArrayWrite(ras, RBM.Linear(rbm, [training[0]], 1)[0], 0.0);
             
             
         </script>

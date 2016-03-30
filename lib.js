@@ -21,8 +21,7 @@ RBM.Create = function(inDimensionsIn, inDimensionsOut)
     return obj;
 };
 M.Bool = function(inData)
-{
-    
+{ 
     var i, j;
     for(i=0; i<inData.length; i++)
     {
@@ -93,4 +92,10 @@ RBM.Observe = function(inRBM, inData, inIterations)
         obs = RBM.Back( inRBM, M.Bool(RBM.Out(inRBM, obs)) ); 
     }
     return M.Unpad(obs);
+};
+
+RBM.Label = function(inRBM, inData)
+{
+    var i, j;
+    return M.Unpad(RBM.Out(inRBM, M.Pad(M.Clone(inData))));
 };
