@@ -89,7 +89,7 @@ RBM.Observe = function(inRBM, inData, inIterations)
     var obs = M.Pad(M.Clone(inData));
     for(i=0; i<inIterations; i++)
     {
-        obs = RBM.Back( inRBM, M.Bool(RBM.Out(inRBM, obs)) ); 
+        obs = RBM.Back( inRBM, RBM.Bool(RBM.Out(inRBM, obs)) ); 
     }
     return M.Unpad(obs);
 };
